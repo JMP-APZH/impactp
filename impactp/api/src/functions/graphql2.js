@@ -1,4 +1,5 @@
 import { createGraphQLHandler } from '@redwoodjs/graphql-server'
+import { scrapeData } from '../services/scraping';
 
 import directives from 'src/directives/**/*.{js,ts}'
 import sdls from 'src/graphql/**/*.sdl.{js,ts}'
@@ -20,11 +21,11 @@ import services from 'src/services/**/*.{js,ts}'
 
 // api/src/functions/graphql.js
 import { makeMergedSchema } from '@redwoodjs/graphql-server';
-import { scrapeData } from './scraping';
+// import { scrapeData } from './scraping';
 
 export const handler = async (event, context) => {
-  const mergedSchema = makeMergedSchema({ schemas });
-  const result = await graphqlHandler(event, context, mergedSchema);
+  // const mergedSchema = makeMergedSchema({ schemas });
+  // const result = await graphqlHandler(event, context, mergedSchema);
 
   if (event.path === '/scraped-data') {
     try {

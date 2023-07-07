@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { PrismaClient } = require('@prisma/client');
+// const { PrismaClient } = require('../../../prisma/client');
 
 const port = process.env.PORT || 5001;
 
@@ -29,7 +30,11 @@ async function scrapeData() {
 // Function to fetch additional pages
 async function fetchAdditionalPages(url) {
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(url, {
+      headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+      },
+      });
     if (response.status === 200) {
       const $ = cheerio.load(response.data);
 
@@ -93,7 +98,7 @@ async function fetchAdditionalPages(url) {
       // price: prices[i]
     });
     // Add the scraped data to the database
-    await saveToDatabase(dairy);
+    // await saveToDatabase(dairy);
   }
   // console.log(names.length)
 }
@@ -121,26 +126,31 @@ return scrapedData;
 async function saveToDatabase(data) {
   // Implement your logic to save the data to the database using Prisma or any other ORM
   try {
-    await prisma.product.create({
-      data: {
-        nom,
-        prix,
-        url,
-        prixspecial,
-        img,
-        quantite,
-        quantite2,
-        prixunite,
-        nutriscore,
-        nutrifull
-      },
+    for (const item of data) {
+      await prisma.dairy.create({
+        data: {
+          nom: item.dairy.nom,
+          prix: item.dairy.prix,
+          url: item.dairy.url,
+          prixspecial: item.dairy.prixspecial,
+          img: item.dairy.img,
+          quantite: item.dairy.quantite,
+          quantite2: item.dairy.quantite2,
+          prixunite: item.dairy.prixunite,
+          nutriscore: item.dairy.nutriscore,
+          nutrifull: item.dairy.nutrifull,
+        },
+
     });
+  }
   } catch (error) {
     console.log('An error occurred while adding data to the database:', error);
   }
 }
 
-app.listen(port, () => {
-  console.log(`Mainserver listening on port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Mainserver listening on port ${port}`);
+// });
+
+module.exports = app;
 
